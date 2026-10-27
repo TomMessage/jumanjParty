@@ -19,28 +19,25 @@ func attach(world: Node3D, stage: PixelStage) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if _busy or not event.is_pressed() or event.is_echo():
 		return
-	var viewport: Variant = null
+	var viewport: Viewport = null
 	if is_inside_tree():
 		viewport = get_viewport()
 	if event.is_action("ui_left") or event.is_action("ui_up"):
 		selection.move(-1)
 		_refresh()
-		_consume(viewport)
+		if viewport != null:
+			viewport.set_input_as_handled()
 		return
 	if event.is_action("ui_right") or event.is_action("ui_down"):
 		selection.move(1)
 		_refresh()
-		_consume(viewport)
+		if viewport != null:
+			viewport.set_input_as_handled()
 		return
 	if event.is_action("ui_accept"):
-		_consume(viewport)
+		if viewport != null:
+			viewport.set_input_as_handled()
 		_activate()
-
-
-func _consume(viewport: Variant) -> void:
-	if viewport == null:
-		return
-	viewport.call("set_input_as_handled")
 
 
 func _build_parchment(world: Node3D) -> void:
