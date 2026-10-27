@@ -2,6 +2,7 @@ extends Control
 
 @export var view_name: String = "table"
 @export var interactive_menu: bool = false
+@export var live_board: bool = false
 
 var _stage: PixelStage
 var _camera: Camera3D
@@ -26,7 +27,7 @@ func _ready() -> void:
 
 func _build_world() -> void:
 	var world := _stage.world
-	RoomSet.build(world)
+	RoomSet.build(world, not live_board)
 	KeeperPlaceholder.build(world)
 	_camera = Camera3D.new()
 	_camera.name = "SeatedCamera"
@@ -36,11 +37,15 @@ func _build_world() -> void:
 	world.add_child(_camera)
 	_apply_view(view_name)
 	_camera.current = true
-	if not interactive_menu:
+	if interactive_menu:
+		_menu = TableMenu.new()
+		add_child(_menu)
+		_menu.attach(world, _stage)
+	if not live_board:
 		return
-	_menu = TableMenu.new()
-	add_child(_menu)
-	_menu.attach(world, _stage)
+	var match_table := MatchTable.new()
+	add_child(match_table)
+	match_table.attach(world)
 
 
 func _unhandled_input(event: InputEvent) -> void:

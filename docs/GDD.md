@@ -27,7 +27,8 @@ Phase 1 and 2 do not play that match yet. They lock the project, the network sea
 - Choose **Sit Down** (the wide table view), **Trim Lamp** (post and PS1 effects on or off), or **Leave**.
 - Look around with keys 1–4 or the gamepad shoulders / face buttons: table, board, game master, window.
 - See the hooded game master placeholder. The role has no borrowed name.
+- Sit down into a hot-seat night: pick 2–4 seats and how many are human. The rest are bots. Roll, buy from the shop, draw event cards, and see who the night keeps.
 
 ## Out of scope until later phases
 
-Board rules, dice resolution, ten real trials, ENet lobbies beyond the session probe, Steam, voice, and the release build.
+Ten real trials, ENet lobbies beyond the session probe, Steam, voice, and the release build. The board does not enter a trial between rounds yet.

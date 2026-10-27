@@ -2,12 +2,12 @@ class_name RoomSet
 extends RefCounted
 
 
-static func build(parent: Node3D) -> void:
+static func build(parent: Node3D, with_decor: bool = true) -> void:
 	_environment(parent)
 	_shell(parent)
 	_window(parent)
 	_table(parent)
-	_board(parent)
+	_board(parent, with_decor)
 	_candles(parent)
 	_props(parent)
 
@@ -73,8 +73,10 @@ static func _table(parent: Node3D) -> void:
 	)
 
 
-static func _board(parent: Node3D) -> void:
+static func _board(parent: Node3D, with_decor: bool) -> void:
 	MeshFactory.place_box(parent, Vector3(1.22, 0.05, 0.82), Vector3(0, 0.855, -0.02), Palette.FELT)
+	if not with_decor:
+		return
 	var cols := 8
 	var rows := 5
 	var step := 0.12

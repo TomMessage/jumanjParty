@@ -32,6 +32,12 @@ A disconnected seat is marked `is_bot` on the host and that snapshot is broadcas
 
 `tools/validate.sh` launches one host and two clients on localhost, drops one client, and checks that the surviving client's snapshot matches the host, including exactly one bot seat. That is a session contract, not a full match. The full match comparison arrives with Phase 5.
 
+## Board
+
+Hot-seat rules live in `MatchRules` (`src/board/match_rules.gd`). `GameState` is the only caller. A client snapshot cannot start a turn, roll, or buy. The board is a 16-space loop loaded from `src/data/spaces`, `cards`, and `items` resources. Dice, shops, and card order use the match seed stored in the `board` snapshot key, so a replay of the same seed ends on the same tokens.
+
+Turns are hot-seat on `LocalNetwork`. Bots roll and shop through `BotPolicy` on the host. A dropped seat is marked `is_bot` and, if a match is active, the host finishes that seat's remaining turns before broadcasting. Landing effects are gain, loss, trap, swap, event card, or shop. Items (pip, leap, shield) change the next roll or the next loss. The night ends after three turns each. The winner is the richest seat, lowest id on a tie. `MatchTable` and `TurnPrompt` only display that snapshot and send input. They do not decide results. The decorative table in the menu, wide shot, board view, and game-master scenes is unchanged.
+
 ## Trials
 
 `MinigameBase` owns a simulated clock. `tick(delta)` accumulates time and finishes at `planned_ms()` (30–90 seconds). `ContractTrial` is the harness fixture registered in `TrialCatalog`: bots score seats, and the result is a total ranking. Phase 4 adds real scenes to the catalog. The probe does not special-case the fixture. It refuses a trial that finishes in one tick or emits an invalid ranking.

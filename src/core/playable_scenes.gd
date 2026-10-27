@@ -8,6 +8,7 @@ static func paths() -> Array[String]:
 		"res://scenes/table.tscn",
 		"res://scenes/board_view.tscn",
 		"res://scenes/game_master.tscn",
+		"res://scenes/match.tscn",
 	]
 
 
@@ -20,4 +21,6 @@ static func capture_name(path: String) -> String:
 		return "board-view.png"
 	if path.ends_with("game_master.tscn"):
 		return "game-master.png"
+	if path.ends_with("match.tscn"):
+		return "match.png"
 	return "scene.png"

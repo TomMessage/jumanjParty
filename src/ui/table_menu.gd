@@ -103,6 +103,6 @@ func _activate() -> void:
 		return
 	_busy = true
 	if action == "sit":
-		get_tree().change_scene_to_file("res://scenes/table.tscn")
+		get_tree().change_scene_to_file("res://scenes/match.tscn")
 		return
 	get_tree().quit()

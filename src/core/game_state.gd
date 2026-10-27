@@ -6,6 +6,7 @@ var _phase: int = Phase.MENU
 var _seed: int = 0
 var _version: int = 0
 var _seats: Array[PlayerSeat] = []
+var _rules: MatchRules = MatchRules.new()
 
 
 func reset_local_mirror() -> void:
@@ -13,6 +14,7 @@ func reset_local_mirror() -> void:
 	_seed = 0
 	_version = 0
 	_seats.clear()
+	_rules = MatchRules.new()
 
 
 func configure_local_match(names: PackedStringArray, seed_value: int) -> bool:
@@ -30,9 +32,8 @@ func configure_local_match(names: PackedStringArray, seed_value: int) -> bool:
 		next_id += 1
 	_seed = seed_value
 	_phase = Phase.TABLE
-	_version += 1
-	EventBus.phase_changed.emit(_phase)
-	Network.broadcast_state(to_snapshot())
+	_rules = MatchRules.new()
+	_publish(true)
 	return true
 
 
@@ -40,9 +41,7 @@ func set_phase(next_phase: int) -> bool:
 	if not Network.is_host():
 		return false
 	_phase = next_phase
-	_version += 1
-	EventBus.phase_changed.emit(_phase)
-	Network.broadcast_state(to_snapshot())
+	_publish(true)
 	return true
 
 
@@ -57,8 +56,7 @@ func ensure_seat(seat_id: int, seat_name: String) -> void:
 	seat.is_bot = false
 	seat.tokens = 0
 	_seats.append(seat)
-	_version += 1
-	Network.broadcast_state(to_snapshot())
+	_publish(false)
 
 
 func replace_with_bot(seat_id: int) -> void:
@@ -71,22 +69,27 @@ func replace_with_bot(seat_id: int) -> void:
 	_version += 1
 	EventBus.seat_replaced_by_bot.emit(seat_id)
 	Network.broadcast_state(to_snapshot())
+	if not _rules.state.active:
+		return
+	_rules.pump(_seats)
+	_publish_board()
 
 
 func handle_input(peer_id: int, action: Dictionary) -> void:
 	if not Network.is_host():
 		return
-	if str(action.get("kind", "")) != "grant_token":
+	var kind := str(action.get("kind", ""))
+	if kind == "grant_token":
+		_grant_token(peer_id, action)
 		return
-	var seat := find_seat(int(action.get("seat", peer_id)))
-	if seat == null:
+	if kind == "start_hotseat":
+		_start_hotseat(action)
 		return
-	var amount := int(action.get("amount", 0))
-	if amount == 0:
+	if kind == "roll":
+		_roll(int(action.get("seat", 0)))
 		return
-	seat.tokens += amount
-	_version += 1
-	Network.broadcast_state(to_snapshot())
+	if kind == "shop":
+		_shop(int(action.get("seat", 0)), str(action.get("item", "")))
 
 
 func apply_snapshot(snapshot: Dictionary) -> void:
@@ -100,6 +103,9 @@ func apply_snapshot(snapshot: Dictionary) -> void:
 	for raw: Variant in raw_seats:
 		if raw is Dictionary:
 			_seats.append(PlayerSeat.from_dict(raw))
+	_rules = MatchRules.new()
+	if snapshot.get("board", {}) is Dictionary:
+		_rules.state = MatchState.from_dict(snapshot.get("board", {}))
 	if phase_differs:
 		EventBus.phase_changed.emit(_phase)
 	EventBus.snapshot_applied.emit(_version)
@@ -114,6 +120,7 @@ func to_snapshot() -> Dictionary:
 		"seed": _seed,
 		"version": _version,
 		"seats": seats,
+		"board": _rules.state.to_dict(),
 	}
 
 
@@ -122,6 +129,10 @@ func find_seat(seat_id: int) -> PlayerSeat:
 		if seat.id == seat_id:
 			return seat
 	return null
+
+
+func board_view() -> Dictionary:
+	return _rules.state.to_dict()
 
 
 func get_phase() -> int:
@@ -138,3 +149,78 @@ func get_version() -> int:
 
 func get_seat_count() -> int:
 	return _seats.size()
+
+
+func _grant_token(peer_id: int, action: Dictionary) -> void:
+	var seat := find_seat(int(action.get("seat", peer_id)))
+	if seat == null:
+		return
+	var amount := int(action.get("amount", 0))
+	if amount == 0:
+		return
+	seat.tokens += amount
+	_publish(false)
+
+
+func _start_hotseat(action: Dictionary) -> void:
+	var names := _read_names(action.get("names", []))
+	if names.size() < 2 or names.size() > 4:
+		return
+	var seed_value := int(action.get("seed", 1))
+	if not configure_local_match(names, seed_value):
+		return
+	_mark_bots(action.get("bots", []))
+	var length := clampi(int(action.get("turns_each", 3)), 0, 8)
+	_rules.begin(_seats, seed_value, length)
+	_rules.pump(_seats)
+	_publish_board()
+
+
+func _roll(seat_id: int) -> void:
+	if not _rules.roll(_seats, seat_id, -1):
+		return
+	_rules.pump(_seats)
+	_publish_board()
+
+
+func _shop(seat_id: int, item_id: String) -> void:
+	if not _rules.shop(_seats, seat_id, item_id):
+		return
+	_rules.pump(_seats)
+	_publish_board()
+
+
+func _read_names(raw: Variant) -> PackedStringArray:
+	var names := PackedStringArray()
+	if not raw is Array:
+		return names
+	for entry: Variant in raw:
+		var seat_name := str(entry).strip_edges()
+		if seat_name == "":
+			return PackedStringArray()
+		names.append(seat_name)
+	return names
+
+
+func _mark_bots(raw: Variant) -> void:
+	if not raw is Array:
+		return
+	var index := 0
+	while index < raw.size() and index < _seats.size():
+		_seats[index].is_bot = bool(raw[index])
+		index += 1
+
+
+func _publish_board() -> void:
+	var next := Phase.BOARD
+	if _rules.is_finished():
+		next = Phase.RESULTS
+	_phase = next
+	_publish(true)
+
+
+func _publish(announce_phase: bool) -> void:
+	_version += 1
+	if announce_phase:
+		EventBus.phase_changed.emit(_phase)
+	Network.broadcast_state(to_snapshot())
