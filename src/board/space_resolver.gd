@@ -16,6 +16,7 @@ static func apply(
 		if trapped >= 0:
 			state.skip[trapped] = true
 		note = "%s is caught" % seat.display_name
+		WorstMoment.consider(state, seat.id, "trap", 3, note, "")
 	if space.kind == "swap":
 		note = PawnMover.swap_with(state, seats, seat, 1)
 	if space.kind == "event":

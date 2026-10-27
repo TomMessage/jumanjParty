@@ -23,6 +23,8 @@ func begin(seats: Array[PlayerSeat], seed_value: int, turns_each: int = 3) -> vo
 	if ids.is_empty():
 		return
 	state.deck = BoardCatalog.shuffled_ids(state)
+	state.keeper_line = KeeperLines.pick("wake", seed_value, 0)
+	state.board_event = "wake"
 	if state.turns_each == 0:
 		_finish(seats)
 		return
@@ -149,9 +151,7 @@ func _enter_trial(seats: Array[PlayerSeat]) -> void:
 
 func _complete_turn(seats: Array[PlayerSeat]) -> void:
 	state.shop_choices = []
-	state.turns_taken += 1
-	if state.turns_taken >= state.seat_ids.size() * state.turns_each:
-		_finish(seats)
+	if _mark_turn(seats):
 		return
 	_advance_seat()
 	_open_turn(seats)
@@ -172,12 +172,19 @@ func _open_turn(seats: Array[PlayerSeat]) -> void:
 		if seat != null:
 			who = seat.display_name
 		state.last_note = "%s sits this one out" % who
-		state.turns_taken += 1
-		if state.turns_taken >= state.seat_ids.size() * state.turns_each:
-			_finish(seats)
+		if _mark_turn(seats):
 			return
 		_advance_seat()
 	state.awaiting = "roll"
+
+
+func _mark_turn(seats: Array[PlayerSeat]) -> bool:
+	state.turns_taken += 1
+	BoardMood.apply(state, seats)
+	if state.turns_taken >= state.seat_ids.size() * state.turns_each:
+		_finish(seats)
+		return true
+	return false
 
 
 func _advance_seat() -> void:
@@ -204,6 +211,8 @@ func _finish(seats: Array[PlayerSeat]) -> void:
 	if winner != null:
 		name = winner.display_name
 	state.last_note = "The night keeps %s" % name
+	state.board_event = "ending"
+	state.keeper_line = KeeperLines.pick("ending", state.rng_seed, state.turns_taken)
 
 
 func _seat(seats: Array[PlayerSeat], seat_id: int) -> PlayerSeat:

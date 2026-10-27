@@ -22,6 +22,13 @@ var trial_id: String = ""
 var trial_scene: String = ""
 var trial_seed: int = 0
 var ranking: Array[int] = []
+var keeper_line: String = ""
+var board_event: String = ""
+var worst_score: int = 0
+var worst_seat: int = 0
+var worst_kind: String = ""
+var worst_line: String = ""
+var worst_scene: String = ""
 
 
 func index_of(seat_id: int) -> int:
@@ -51,6 +58,13 @@ func to_dict() -> Dictionary:
 		"trial_scene": trial_scene,
 		"trial_seed": trial_seed,
 		"ranking": _plain_ints(ranking),
+		"keeper_line": keeper_line,
+		"board_event": board_event,
+		"worst_score": worst_score,
+		"worst_seat": worst_seat,
+		"worst_kind": worst_kind,
+		"worst_line": worst_line,
+		"worst_scene": worst_scene,
 	}
 
 
@@ -77,6 +91,13 @@ static func from_dict(data: Dictionary) -> MatchState:
 	state.trial_scene = str(data.get("trial_scene", ""))
 	state.trial_seed = int(data.get("trial_seed", 0))
 	state.ranking = _read_ints(data.get("ranking", []))
+	state.keeper_line = str(data.get("keeper_line", ""))
+	state.board_event = str(data.get("board_event", ""))
+	state.worst_score = int(data.get("worst_score", 0))
+	state.worst_seat = int(data.get("worst_seat", 0))
+	state.worst_kind = str(data.get("worst_kind", ""))
+	state.worst_line = str(data.get("worst_line", ""))
+	state.worst_scene = str(data.get("worst_scene", ""))
 	return state
 
 

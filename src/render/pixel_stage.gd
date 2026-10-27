@@ -15,6 +15,8 @@ func _ready() -> void:
 	resized.connect(_fill)
 	if get_parent() is Control:
 		(get_parent() as Control).resized.connect(_fill)
+	if not EventBus.settings_changed.is_connected(apply_settings):
+		EventBus.settings_changed.connect(apply_settings)
 
 
 func _build() -> void:

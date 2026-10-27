@@ -3,14 +3,19 @@ extends Node
 
 var _prompt: TurnPrompt
 var _presenter: BoardPresenter
+var _world: Node3D
+var _options := TableOptions.new()
 var _seat_count: int = 3
 var _human_count: int = 1
 var _row: int = 0
+var _lesson: int = 0
 var _shop_index: int = 0
+var _tuning: bool = false
 var _curtain: TrialCurtain
 
 
 func attach(world: Node3D) -> void:
+	_world = world
 	_presenter = BoardPresenter.new()
 	_presenter.build(world)
 	_prompt = TurnPrompt.new()
@@ -47,6 +52,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _setup_input(event: InputEvent) -> void:
+	if _tuning:
+		_tune(event)
+		return
+	if event.is_action("ui_cancel"):
+		_tuning = true
+		get_viewport().set_input_as_handled()
+		_show_options()
+		return
 	if event.is_action("ui_left"):
 		_row = posmod(_row - 1, 3)
 	elif event.is_action("ui_right"):
@@ -126,6 +139,31 @@ func _send_shop(board: Dictionary) -> void:
 	)
 
 
+func _tune(event: InputEvent) -> void:
+	if event.is_action("ui_cancel") or event.is_action("ui_accept"):
+		_tuning = false
+		get_viewport().set_input_as_handled()
+		_show_setup()
+		return
+	var moved := false
+	if event.is_action("ui_up"):
+		_options.move(-1)
+		moved = true
+	if event.is_action("ui_down"):
+		_options.move(1)
+		moved = true
+	if event.is_action("ui_left"):
+		_options.nudge(-1)
+		moved = true
+	if event.is_action("ui_right"):
+		_options.nudge(1)
+		moved = true
+	if not moved:
+		return
+	get_viewport().set_input_as_handled()
+	_show_options()
+
+
 func _nudge(step: int) -> void:
 	if _row == 0:
 		_seat_count = clampi(_seat_count + step, 2, 4)
@@ -133,6 +171,8 @@ func _nudge(step: int) -> void:
 		return
 	if _row == 1:
 		_human_count = clampi(_human_count + step, 1, _seat_count)
+		return
+	_lesson = posmod(_lesson + step, TableLesson.count())
 
 
 func _refresh(_version: int) -> void:
@@ -140,8 +180,13 @@ func _refresh(_version: int) -> void:
 	_presenter.sync(board)
 	if _curtain != null:
 		_curtain.show_board(board)
+	_caption(board)
 	if int(board.get("winner_id", 0)) != 0:
+		_tuning = false
 		_show_result(board)
+		return
+	if _tuning and not bool(board.get("active", false)):
+		_show_options()
 		return
 	if not bool(board.get("active", false)):
 		_show_setup()
@@ -150,11 +195,7 @@ func _refresh(_version: int) -> void:
 
 
 func _show_setup() -> void:
-	var bots := _seat_count - _human_count
-	var detail := (
-		"%d %s, %d %s" % [_human_count, _plural(_human_count, "HUMAN"), bots, _plural(bots, "BOT")]
-	)
-	_prompt.set_text("HOW MANY SIT", detail)
+	_prompt.set_text("HOW MANY SIT", TableLesson.page(_lesson))
 	(
 		_prompt
 		. set_choices(
@@ -162,12 +203,17 @@ func _show_setup() -> void:
 				[
 					"%d SEATS" % _seat_count,
 					"%d %s" % [_human_count, _plural(_human_count, "HUMAN")],
-					"BEGIN",
+					"HEAR",
 				]
 			),
 			_row,
 		)
 	)
+
+
+func _show_options() -> void:
+	_prompt.set_text("TRIM THE NIGHT", _options.detail())
+	_prompt.set_choices(_options.slates(), _options.selected())
 
 
 func _show_turn(board: Dictionary) -> void:
@@ -190,8 +236,27 @@ func _show_result(board: Dictionary) -> void:
 	var name := "the table"
 	if winner != null:
 		name = winner.display_name
-	_prompt.set_text("SURVIVOR %s" % name, str(board.get("last_note", "")))
+	var detail := str(board.get("worst_line", ""))
+	if detail == "":
+		detail = str(board.get("keeper_line", ""))
+	if detail == "":
+		detail = str(board.get("last_note", ""))
+	_prompt.set_text("SURVIVOR %s" % name, detail)
 	_prompt.set_choices(PackedStringArray(["AGAIN"]), 0)
+
+
+func _caption(board: Dictionary) -> void:
+	if _world == null:
+		return
+	var root := _world.get_node_or_null("GameMaster") as Node3D
+	if root == null:
+		return
+	var line := str(board.get("keeper_line", ""))
+	if int(board.get("winner_id", 0)) != 0:
+		var worst := str(board.get("worst_line", ""))
+		if worst != "":
+			line = worst
+	KeeperCaption.show_line(root, line)
 
 
 func _plural(count: int, word: String) -> String:

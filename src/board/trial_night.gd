@@ -27,6 +27,7 @@ static func resolve(state: MatchState, seats: Array[PlayerSeat]) -> bool:
 	state.ranking = ranking
 	_pay(seats, ranking)
 	state.last_note = _note(state.trial_id, ranking, seats)
+	_remember_last(state, seats, ranking)
 	return true
 
 
@@ -96,6 +97,20 @@ static func _pay(seats: Array[PlayerSeat], ranking: Array[int]) -> void:
 		if seat != null and prize > 0:
 			seat.tokens += prize
 		place += 1
+
+
+static func _remember_last(
+	state: MatchState, seats: Array[PlayerSeat], ranking: Array[int]
+) -> void:
+	if ranking.size() < 2:
+		return
+	var last_id := ranking[ranking.size() - 1]
+	var title := state.trial_id
+	var card := _find(state.trial_id)
+	if card != null:
+		title = card.title
+	var line := "%s finishes last in %s." % [_seat_name(seats, last_id), title]
+	WorstMoment.consider(state, last_id, "last", 4, line, state.trial_scene)
 
 
 static func _note(trial_id: String, ranking: Array[int], seats: Array[PlayerSeat]) -> String:

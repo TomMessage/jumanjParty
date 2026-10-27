@@ -27,9 +27,9 @@ The hot-seat night is playable. After each roll or shop, the whole table falls i
 - Choose **Sit Down** (starts the hot-seat night), **Trim Lamp** (post and PS1 effects on or off), or **Leave**.
 - Look around with keys 1–4 or the gamepad shoulders / face buttons: table, board, game master, window.
 - See the hooded game master placeholder. The role has no borrowed name.
-- Sit down into a hot-seat night: pick 2–4 seats and how many are human. The rest are bots. Roll, buy from the shop, draw event cards, fall into a trial, and see who the night keeps.
+- Sit down into a hot-seat night: pick 2–4 seats and how many are human. The rest are bots. Roll, buy from the shop, draw event cards, fall into a trial, and see who the night keeps. Hear pages a short lesson. Cancel trims the lamp's strength, the ink, motion, type size, and the keeper key.
 - Open a scene under `src/minigames/<world>/` to play that trial. The camera falls onto the felt, then bots run the 30–90 second diorama.
 
 ## Out of scope until later phases
 
-Voice and the release build. Steam lobbies, invites, the relay, achievements, and rich presence are wired, and they stay quiet when GodotSteam or a logged-in app is missing (`docs/BLOCKERS.md`). Hot-seat and ENet keep running.
+The release build. The keeper already speaks in synthetic gibberish over a rustle and a layered drone, and the end of night repeats the worst failure. Steam lobbies, invites, the relay, achievements, and rich presence stay quiet when GodotSteam or a logged-in app is missing (`docs/BLOCKERS.md`). Hot-seat and ENet keep running.

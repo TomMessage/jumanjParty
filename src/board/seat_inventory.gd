@@ -39,6 +39,9 @@ static func apply_loss(state: MatchState, seat: PlayerSeat, amount: int) -> int:
 		return 0
 	var lost := mini(amount, seat.tokens)
 	seat.tokens -= lost
+	if lost > 0:
+		var line := "%s loses %d" % [seat.display_name, lost]
+		WorstMoment.consider(state, seat.id, "loss", lost * 2, line, "")
 	return lost
 
 

@@ -26,6 +26,8 @@ func build(parent: Node3D) -> void:
 func set_text(status: String, detail: String) -> void:
 	_status.text = status
 	_detail.text = detail
+	ReadingStyle.apply(_status, 28)
+	ReadingStyle.apply(_detail, 18)
 
 
 func set_choices(labels: PackedStringArray, selected: int) -> void:
@@ -36,6 +38,7 @@ func set_choices(labels: PackedStringArray, selected: int) -> void:
 		_labels[index].visible = shown
 		if shown:
 			_labels[index].text = labels[index]
+			ReadingStyle.apply(_labels[index], 16)
 			var color := Palette.WOOD_DARK
 			if index == selected:
 				color = Palette.OCHRE

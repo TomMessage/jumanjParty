@@ -8,6 +8,11 @@ var dither_enabled: bool = true
 var chroma_enabled: bool = true
 var ps1_enabled: bool = true
 var master_linear: float = 0.8
+var effect_intensity: float = 1.0
+var high_contrast: bool = false
+var reduce_motion: bool = false
+var text_scale: float = 1.0
+var keeper_key: int = 0
 
 
 func _ready() -> void:
@@ -22,6 +27,7 @@ func to_render_settings() -> Dictionary:
 		"dither_enabled": dither_enabled,
 		"chroma_enabled": chroma_enabled,
 		"ps1_enabled": ps1_enabled,
+		"effect_intensity": effect_intensity,
 	}
 
 
@@ -41,6 +47,12 @@ func load_settings() -> void:
 	chroma_enabled = bool(cfg.get_value("render", "chroma_enabled", true))
 	ps1_enabled = bool(cfg.get_value("render", "ps1_enabled", true))
 	master_linear = float(cfg.get_value("audio", "master_linear", 0.8))
+	effect_intensity = clampf(float(cfg.get_value("render", "effect_intensity", 1.0)), 0.0, 1.0)
+	high_contrast = bool(cfg.get_value("access", "high_contrast", false))
+	reduce_motion = bool(cfg.get_value("access", "reduce_motion", false))
+	text_scale = clampf(float(cfg.get_value("access", "text_scale", 1.0)), 0.8, 1.6)
+	keeper_key = int(cfg.get_value("input", "keeper_key", 0))
+	InputBindings.apply_keeper()
 
 
 func save_settings() -> int:
@@ -51,5 +63,13 @@ func save_settings() -> int:
 	cfg.set_value("render", "dither_enabled", dither_enabled)
 	cfg.set_value("render", "chroma_enabled", chroma_enabled)
 	cfg.set_value("render", "ps1_enabled", ps1_enabled)
+	cfg.set_value("render", "effect_intensity", effect_intensity)
+	cfg.set_value("access", "high_contrast", high_contrast)
+	cfg.set_value("access", "reduce_motion", reduce_motion)
+	cfg.set_value("access", "text_scale", text_scale)
+	cfg.set_value("input", "keeper_key", keeper_key)
 	cfg.set_value("audio", "master_linear", master_linear)
-	return cfg.save(settings_path)
+	var saved := cfg.save(settings_path)
+	if saved == OK:
+		EventBus.settings_changed.emit()
+	return saved

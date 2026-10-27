@@ -42,3 +42,10 @@ Next: Phase 6, Steam. Do not start it in this branch.
 Tests: an unready runtime refuses host, join, invite, and relay; asking for Steam falls back to ENet or local and a bot night still ranks a trial; deeds stay pending; presence stays unpublished. The three-instance ENet probe is unchanged.
 Risk: this environment has no GodotSteam binary, Steamworks SDK, app id, or logged-in client, so `steamInitEx` is never called. See `docs/BLOCKERS.md`. A green gate here is the fallback, not a live lobby.
 Next: Phase 7, the game master. Do not start it in this branch.
+
+## Phase 7 — Game master
+
+The keeper speaks from the snapshot: a wake line, a board event, a pocket every fourth turn, a slide every fifth, and an ending line. The end parchment repeats the worst failure, and the curtain reloads that trial when one was recorded. Ambience, a two-layer drone, and a synthetic gibberish voice sit on the existing buses. Cancel on the seat parchment opens lamp intensity, ink, motion, type size, and the keeper key. Hear pages a four-line lesson. Accept still starts the night.
+Tests: a pocket and a slide leave the dice stream alone; an equal failure replaces the replay; two bot nights match with the lamp at 0 and at 1; post intensity scales and still zeroes when effects are off; rebinding the keeper key keeps the joypad button.
+Risk: the live Steam lobby is still blocked (`docs/BLOCKERS.md`). This branch does not pretend it is online. A cheat changes tokens, so a night is deterministic only when both sides share the host snapshot.
+Next: Phase 8, release readiness. Do not start it in this branch.

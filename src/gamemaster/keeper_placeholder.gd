@@ -33,3 +33,4 @@ static func build(parent: Node3D) -> void:
 	plaque.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	plaque.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	root.add_child(plaque)
+	KeeperCaption.attach(root)

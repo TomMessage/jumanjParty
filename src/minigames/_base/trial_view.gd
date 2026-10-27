@@ -46,6 +46,10 @@ func play_fall() -> void:
 
 
 func advance_fall(delta: float) -> void:
+	if SaveSystem.reduce_motion:
+		_fall = 1.0
+		_place_camera()
+		return
 	if _fall >= 1.0:
 		return
 	_fall = minf(_fall + maxf(delta * 3.0, 0.08), 1.0)
