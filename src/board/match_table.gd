@@ -7,6 +7,7 @@ var _seat_count: int = 3
 var _human_count: int = 1
 var _row: int = 0
 var _shop_index: int = 0
+var _curtain: TrialCurtain
 
 
 func attach(world: Node3D) -> void:
@@ -14,6 +15,10 @@ func attach(world: Node3D) -> void:
 	_presenter.build(world)
 	_prompt = TurnPrompt.new()
 	_prompt.build(world)
+	_curtain = TrialCurtain.new()
+	_curtain.name = "TrialCurtain"
+	add_child(_curtain)
+	_curtain.attach(world)
 	if not EventBus.snapshot_applied.is_connected(_refresh):
 		EventBus.snapshot_applied.connect(_refresh)
 	_refresh(GameState.get_version())
@@ -133,6 +138,8 @@ func _nudge(step: int) -> void:
 func _refresh(_version: int) -> void:
 	var board := GameState.board_view()
 	_presenter.sync(board)
+	if _curtain != null:
+		_curtain.show_board(board)
 	if int(board.get("winner_id", 0)) != 0:
 		_show_result(board)
 		return

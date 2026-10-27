@@ -23,7 +23,8 @@ Next: Phase 4, the trials. Do not start it in this branch.
 
 ## Phase 4 — Trials
 
-Ten real-time dioramas, two per world (jungle, desert, haunted, space, volcano): vine rush and lava hurdles (race), sting lanes and candle dodge (reflex), sundial lock and star dial (puzzle), beetle rain and portrait waves (survival), gravy orbit and marshmallow crown (absurd). Each has a scene, card, bot, and test, runs 30–90 seconds, and opens with a fall onto the felt. The trial builds the ranking. The hot-seat night does not enter a trial yet.
-Tests: one finish test per trial, a bot-versus-reckless check for each genre, a repeated seed, the fall, catalog coverage, and the probe over every catalog script.
-Risk: these trials are not synced into the match or the ENet session. A diorama whose floor and sky stop contrasting can fail the image guard.
+Ten real-time dioramas, two per world (jungle, desert, haunted, space, volcano): vine rush and lava hurdles (race), sting lanes and candle dodge (reflex), sundial lock and star dial (puzzle), beetle rain and portrait waves (survival), gravy orbit and marshmallow crown (absurd). Each has a scene, card, bot, and test, runs 30–90 seconds, and opens with a fall onto the felt.
+The host runs one of those trials after every roll or shop. Every seat is in the ranking, including bots. Places pay 3, then 2, then 1 token, and the night returns to the board. The curtain on the table plays the fall; it does not choose the result.
+Tests: one finish test per trial, a bot-versus-reckless check for each genre, a repeated seed, the fall, catalog coverage, the probe over every catalog script, plus a night that queues, plays, pays, and round-trips the ranking.
+Risk: the ENet probe still compares a short session, not this night. A diorama whose floor and sky stop contrasting can fail the image guard.
 Next: Phase 5, online play. Do not start it in this branch.

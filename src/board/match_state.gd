@@ -18,6 +18,10 @@ var skip: Array[bool] = []
 var items: Array[PackedStringArray] = []
 var deck: Array[String] = []
 var shop_choices: Array[String] = []
+var trial_id: String = ""
+var trial_scene: String = ""
+var trial_seed: int = 0
+var ranking: Array[int] = []
 
 
 func index_of(seat_id: int) -> int:
@@ -43,6 +47,10 @@ func to_dict() -> Dictionary:
 		"items": _plain_items(items),
 		"deck": _plain_strings(deck),
 		"shop_choices": _plain_strings(shop_choices),
+		"trial_id": trial_id,
+		"trial_scene": trial_scene,
+		"trial_seed": trial_seed,
+		"ranking": _plain_ints(ranking),
 	}
 
 
@@ -65,6 +73,10 @@ static func from_dict(data: Dictionary) -> MatchState:
 	state.items = _read_items(data.get("items", []))
 	state.deck = _read_strings(data.get("deck", []))
 	state.shop_choices = _read_strings(data.get("shop_choices", []))
+	state.trial_id = str(data.get("trial_id", ""))
+	state.trial_scene = str(data.get("trial_scene", ""))
+	state.trial_seed = int(data.get("trial_seed", 0))
+	state.ranking = _read_ints(data.get("ranking", []))
 	return state
 
 

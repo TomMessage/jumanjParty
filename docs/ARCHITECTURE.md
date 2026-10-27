@@ -42,7 +42,9 @@ Turns are hot-seat on `LocalNetwork`. Bots roll and shop through `BotPolicy` on 
 
 `MinigameBase` owns a simulated clock. `tick(delta)` accumulates time and finishes at `planned_ms()` (30–90 seconds). `TrialCatalog` lists `ContractTrial` plus ten `TrialCard` resources. Each card points at a scene, a `TrialBody` script, and a duration. The body builds a field (race, dodge, puzzle, waves, or absurd), asks that trial's bot for every seat, and ranks the scores. The ranking is built inside the trial. The field does not read render settings, so turning effects off does not change it.
 
-`TrialView` is the diorama. The camera starts above the felt and lands within a few frames. That fall is presentation only. The probe still instantiates each catalog script with `Script.new()`, plays it with bots, and refuses a one-tick finish or an invalid ranking. It does not special-case `ContractTrial`. The hot-seat board does not enter these trials yet. Phase 5 is where a round would sync one.
+`TrialView` is the diorama. The camera starts above the felt and lands within a few frames. That fall is presentation only. The probe still instantiates each catalog script with `Script.new()`, plays it with bots, and refuses a one-tick finish or an invalid ranking. It does not special-case `ContractTrial`.
+
+After each board action the host queues one of the ten cards from the match seed and the turn count, without touching the dice stream. `TrialNight` runs that trial for every seat, bots included, checks the ranking, and pays 3, 2, then 1 token by place. The night then returns to the board. `TrialCurtain` shows the fall on the table; it does not decide the ranking. A dropped seat still becomes a bot and the host finishes the remaining turns, trials included. Phase 5 is where those snapshots move across ENet.
 
 ## Rendering
 

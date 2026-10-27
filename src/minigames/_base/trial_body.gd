@@ -83,7 +83,7 @@ func _boot_preview() -> void:
 
 
 func _ensure_view() -> void:
-	if _view != null or _card == null:
+	if _view != null or _card == null or not is_inside_tree():
 		return
 	_view = TrialView.new()
 	_view.name = "TrialView"

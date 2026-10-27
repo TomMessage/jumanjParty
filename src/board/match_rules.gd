@@ -56,7 +56,7 @@ func roll(seats: Array[PlayerSeat], seat_id: int, forced_face: int = -1) -> bool
 		state.last_note = "%s rolls %d and leaps. %s" % [seat.display_name, face, note]
 	if space.kind == "shop":
 		return _open_shop(seats, seat)
-	_complete_turn(seats)
+	_enter_trial(seats)
 	return true
 
 
@@ -76,14 +76,25 @@ func shop(seats: Array[PlayerSeat], seat_id: int, item_id: String) -> bool:
 	else:
 		state.last_note = "%s leaves the shop" % seat.display_name
 	state.shop_choices = []
+	_enter_trial(seats)
+	return true
+
+
+func resolve_trial(seats: Array[PlayerSeat]) -> bool:
+	if not TrialNight.resolve(state, seats):
+		return false
 	_complete_turn(seats)
 	return true
 
 
 func pump(seats: Array[PlayerSeat]) -> void:
 	var guard := 0
-	while state.active and guard < 64:
+	while state.active and guard < 160:
 		guard += 1
+		if state.awaiting == "trial":
+			if not resolve_trial(seats):
+				return
+			continue
 		var seat := _seat(seats, state.turn_seat)
 		if seat == null or not seat.is_bot:
 			return
@@ -113,7 +124,7 @@ func _open_shop(seats: Array[PlayerSeat], seat: PlayerSeat) -> bool:
 	var offers := BoardCatalog.offers_for(seat.tokens, state.items[index])
 	if offers.is_empty():
 		state.last_note += " The shop is shut."
-		_complete_turn(seats)
+		_enter_trial(seats)
 		return true
 	state.awaiting = "shop"
 	state.shop_choices = offers
@@ -127,6 +138,13 @@ func _next_face() -> int:
 	var face := rng.randi_range(1, 6)
 	state.rng_state = rng.state
 	return face
+
+
+func _enter_trial(seats: Array[PlayerSeat]) -> void:
+	state.shop_choices = []
+	if TrialNight.queue(state):
+		return
+	_complete_turn(seats)
 
 
 func _complete_turn(seats: Array[PlayerSeat]) -> void:
