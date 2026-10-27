@@ -28,3 +28,10 @@ The host runs one of those trials after every roll or shop. Every seat is in the
 Tests: one finish test per trial, a bot-versus-reckless check for each genre, a repeated seed, the fall, catalog coverage, the probe over every catalog script, plus a night that queues, plays, pays, and round-trips the ranking.
 Risk: the ENet probe still compares a short session, not this night. A diorama whose floor and sky stop contrasting can fail the image guard.
 Next: Phase 5, online play. Do not start it in this branch.
+
+## Phase 5 — Multiplayer
+
+The host keeps a lobby of joined seats, ready names, and the start of a night. Clients send rolls and shop choices over ENet. The host still resolves dice, trials, rankings, and tokens, then broadcasts the board. A dropped seat becomes a bot and finishes its turns.
+Tests: a guest cannot start the lobby or roll someone else's seat; a two-seat night survives a disconnect and round-trips; the 3-instance probe plays one turn each, replaces one client with a bot, and matches the final board.
+Risk: the probe is one short night on localhost, not a long match or a Steam lobby. A client that never sends its roll leaves the host waiting.
+Next: Phase 6, Steam. Do not start it in this branch.

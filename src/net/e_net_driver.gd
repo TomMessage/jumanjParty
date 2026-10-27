@@ -47,6 +47,12 @@ func send_state(snapshot: Dictionary) -> void:
 	receive_state.rpc(snapshot)
 
 
+func submit_input(action: Dictionary) -> void:
+	if multiplayer.multiplayer_peer == null:
+		return
+	receive_input.rpc_id(1, action)
+
+
 func announce_drop(peer_id: int) -> void:
 	if _drop_sent or not multiplayer.is_server():
 		return
@@ -58,6 +64,13 @@ func announce_drop(peer_id: int) -> void:
 func receive_state(snapshot: Dictionary) -> void:
 	if _network != null:
 		_network.deliver_state(snapshot)
+
+
+@rpc("any_peer", "reliable")
+func receive_input(action: Dictionary) -> void:
+	if _network == null or not multiplayer.is_server():
+		return
+	_network.deliver_input(multiplayer.get_remote_sender_id(), action)
 
 
 @rpc("authority", "reliable")

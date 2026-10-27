@@ -30,7 +30,7 @@ A disconnected seat is marked `is_bot` on the host and that snapshot is broadcas
 - `ENetNetwork` — host-authoritative peers. The driver node is mounted at `/root/Network/ENetDriver` so RPCs share one path. Filename `e_net_network.gd` keeps the `ENet` acronym while satisfying the linter's snake-to-Pascal rule.
 - `SteamNetwork` — returns `ERR_UNAVAILABLE` until Phase 6. No GodotSteam addon yet.
 
-`tools/validate.sh` launches one host and two clients on localhost, drops one client, and checks that the surviving client's snapshot matches the host, including exactly one bot seat. That is a session contract, not a full match. The full match comparison arrives with Phase 5.
+`tools/validate.sh` launches one host and two clients on localhost. The host opens a lobby on the connected seats, starts a one-turn night, drops one client, and the replacement bot finishes that seat. The surviving client sends its own roll or shop. The host resolves dice, trials, and tokens. Final snapshots match, including the board and the lobby, with exactly one bot seat.
 
 ## Board
 
@@ -44,7 +44,7 @@ Turns are hot-seat on `LocalNetwork`. Bots roll and shop through `BotPolicy` on 
 
 `TrialView` is the diorama. The camera starts above the felt and lands within a few frames. That fall is presentation only. The probe still instantiates each catalog script with `Script.new()`, plays it with bots, and refuses a one-tick finish or an invalid ranking. It does not special-case `ContractTrial`.
 
-After each board action the host queues one of the ten cards from the match seed and the turn count, without touching the dice stream. `TrialNight` runs that trial for every seat, bots included, checks the ranking, and pays 3, 2, then 1 token by place. The night then returns to the board. `TrialCurtain` shows the fall on the table; it does not decide the ranking. A dropped seat still becomes a bot and the host finishes the remaining turns, trials included. Phase 5 is where those snapshots move across ENet.
+After each board action the host queues one of the ten cards from the match seed and the turn count, without touching the dice stream. `TrialNight` runs that trial for every seat, bots included, checks the ranking, and pays 3, 2, then 1 token by place. The night then returns to the board. `TrialCurtain` shows the fall on the table; it does not decide the ranking. A dropped seat still becomes a bot and the host finishes the remaining turns, trials included. That board snapshot, trial id and ranking included, is what the host broadcasts.
 
 ## Rendering
 

@@ -32,4 +32,4 @@ The hot-seat night is playable. After each roll or shop, the whole table falls i
 
 ## Out of scope until later phases
 
-ENet lobbies beyond the session probe, Steam, voice, and the release build.
+Steam, voice, and the release build. GodotSteam is still a stub.

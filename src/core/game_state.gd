@@ -7,6 +7,7 @@ var _seed: int = 0
 var _version: int = 0
 var _seats: Array[PlayerSeat] = []
 var _rules: MatchRules = MatchRules.new()
+var _lobby: LobbyTable = LobbyTable.new()
 
 
 func reset_local_mirror() -> void:
@@ -15,6 +16,7 @@ func reset_local_mirror() -> void:
 	_version = 0
 	_seats.clear()
 	_rules = MatchRules.new()
+	_lobby = LobbyTable.new()
 
 
 func configure_local_match(names: PackedStringArray, seed_value: int) -> bool:
@@ -33,6 +35,7 @@ func configure_local_match(names: PackedStringArray, seed_value: int) -> bool:
 	_seed = seed_value
 	_phase = Phase.TABLE
 	_rules = MatchRules.new()
+	_lobby.reset()
 	_publish(true)
 	return true
 
@@ -81,15 +84,18 @@ func handle_input(peer_id: int, action: Dictionary) -> void:
 	var kind := str(action.get("kind", ""))
 	if kind == "grant_token":
 		_grant_token(peer_id, action)
-		return
+	if kind == "lobby_name":
+		_lobby_name(peer_id, action)
+	if kind == "lobby_ready":
+		_lobby_ready(peer_id)
 	if kind == "start_hotseat":
-		_start_hotseat(action)
-		return
+		_start_hotseat(peer_id, action)
+	if kind == "start_match":
+		_start_match(peer_id, action)
 	if kind == "roll":
-		_roll(int(action.get("seat", 0)))
-		return
+		_roll(peer_id, int(action.get("seat", 0)))
 	if kind == "shop":
-		_shop(int(action.get("seat", 0)), str(action.get("item", "")))
+		_shop(peer_id, int(action.get("seat", 0)), str(action.get("item", "")))
 
 
 func apply_snapshot(snapshot: Dictionary) -> void:
@@ -106,6 +112,9 @@ func apply_snapshot(snapshot: Dictionary) -> void:
 	_rules = MatchRules.new()
 	if snapshot.get("board", {}) is Dictionary:
 		_rules.state = MatchState.from_dict(snapshot.get("board", {}))
+	var lobby_raw: Variant = snapshot.get("lobby", {})
+	if lobby_raw is Dictionary:
+		_lobby = LobbyTable.from_dict(lobby_raw)
 	if phase_differs:
 		EventBus.phase_changed.emit(_phase)
 	EventBus.snapshot_applied.emit(_version)
@@ -121,6 +130,7 @@ func to_snapshot() -> Dictionary:
 		"version": _version,
 		"seats": seats,
 		"board": _rules.state.to_dict(),
+		"lobby": _lobby.to_dict(),
 	}
 
 
@@ -162,7 +172,9 @@ func _grant_token(peer_id: int, action: Dictionary) -> void:
 	_publish(false)
 
 
-func _start_hotseat(action: Dictionary) -> void:
+func _start_hotseat(peer_id: int, action: Dictionary) -> void:
+	if peer_id != 1:
+		return
 	var names := _read_names(action.get("names", []))
 	if names.size() < 2 or names.size() > 4:
 		return
@@ -176,14 +188,18 @@ func _start_hotseat(action: Dictionary) -> void:
 	_publish_board()
 
 
-func _roll(seat_id: int) -> void:
+func _roll(peer_id: int, seat_id: int) -> void:
+	if peer_id != seat_id:
+		return
 	if not _rules.roll(_seats, seat_id, -1):
 		return
 	_rules.pump(_seats)
 	_publish_board()
 
 
-func _shop(seat_id: int, item_id: String) -> void:
+func _shop(peer_id: int, seat_id: int, item_id: String) -> void:
+	if peer_id != seat_id:
+		return
 	if not _rules.shop(_seats, seat_id, item_id):
 		return
 	_rules.pump(_seats)
@@ -211,7 +227,41 @@ func _mark_bots(raw: Variant) -> void:
 		index += 1
 
 
+func _lobby_name(peer_id: int, action: Dictionary) -> void:
+	if not _lobby.open:
+		return
+	var seat := find_seat(peer_id)
+	if seat == null or seat.is_bot:
+		return
+	var seat_name := str(action.get("name", "")).strip_edges()
+	if seat_name == "":
+		return
+	seat.display_name = seat_name
+	_publish(false)
+
+
+func _lobby_ready(peer_id: int) -> void:
+	if not _lobby.open or find_seat(peer_id) == null:
+		return
+	_lobby.mark_ready(peer_id)
+	_publish(false)
+
+
+func _start_match(peer_id: int, action: Dictionary) -> void:
+	if peer_id != 1 or not _lobby.open:
+		return
+	if _seats.size() < 2 or _seats.size() > 4:
+		return
+	var seed_value := int(action.get("seed", 1))
+	var length := clampi(int(action.get("turns_each", 1)), 0, 8)
+	_seed = seed_value
+	_rules.begin(_seats, seed_value, length)
+	_rules.pump(_seats)
+	_publish_board()
+
+
 func _publish_board() -> void:
+	_lobby.open = false
 	var next := Phase.BOARD
 	if _rules.is_finished():
 		next = Phase.RESULTS

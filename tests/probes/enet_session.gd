@@ -10,6 +10,7 @@ var _drop_id: int = 0
 var _final_written: bool = false
 var _sent_ms: int = 0
 var _booted: bool = false
+var _match_started: bool = false
 
 
 func _process(_delta: float) -> void:
@@ -17,7 +18,7 @@ func _process(_delta: float) -> void:
 		_booted = true
 		if not _boot():
 			return
-	if Time.get_ticks_msec() - _started_ms > 20000:
+	if Time.get_ticks_msec() - _started_ms > 30000:
 		print("ENET_FAIL timeout role=%s" % _role)
 		get_tree().quit(1)
 		return
@@ -69,18 +70,33 @@ func _on_peer_connected(peer_id: int) -> void:
 
 
 func _host_frame() -> void:
-	if not _announced and _enet.remote_count() >= 2:
-		_announced = true
+	if not _match_started and _enet.remote_count() >= 2 and GameState.get_seat_count() >= 3:
+		_match_started = true
+		GameState.handle_input(1, {"kind": "start_match", "seed": 11, "turns_each": 1})
 		_drop_id = _highest_remote()
+		_announced = true
 		_enet.announce_drop(_drop_id)
 		print("ENET_DROP %d" % _drop_id)
-	if _announced and not _final_written and _seat_is_bot(_drop_id):
+	if _match_started and _seat_is_bot(_drop_id):
+		_play_host_seat()
+	if _announced and not _final_written and GameState.get_phase() == GameState.Phase.RESULTS:
 		_final_written = true
 		_sent_ms = Time.get_ticks_msec()
 		_write_json("host_final.json", GameState.to_snapshot())
 		print("ENET_HOST_FINAL")
 	if _final_written and Time.get_ticks_msec() > _sent_ms + 2000:
 		get_tree().quit(0)
+
+
+func _play_host_seat() -> void:
+	var board := GameState.board_view()
+	if int(board.get("turn_seat", 0)) != 1:
+		return
+	var step := str(board.get("awaiting", ""))
+	if step == "roll":
+		GameState.handle_input(1, {"kind": "roll", "seat": 1})
+	if step == "shop":
+		GameState.handle_input(1, {"kind": "shop", "seat": 1, "item": ""})
 
 
 func _client_frame() -> void:
@@ -90,13 +106,26 @@ func _client_frame() -> void:
 		return
 	if _final_written or _enet.get_peer_id() == 0:
 		return
-	if not _any_bot():
+	_play_client_seat()
+	if GameState.get_phase() != GameState.Phase.RESULTS:
 		return
 	_final_written = true
 	var filename := "client_%d.json" % _enet.get_peer_id()
 	_write_json(filename, GameState.to_snapshot())
 	print("ENET_CLIENT_FINAL %s" % filename)
 	get_tree().quit(0)
+
+
+func _play_client_seat() -> void:
+	var board := GameState.board_view()
+	var seat_id := _enet.get_peer_id()
+	if int(board.get("turn_seat", 0)) != seat_id:
+		return
+	var step := str(board.get("awaiting", ""))
+	if step == "roll":
+		Network.send_input({"kind": "roll", "seat": seat_id})
+	if step == "shop":
+		Network.send_input({"kind": "shop", "seat": seat_id, "item": ""})
 
 
 func _highest_remote() -> int:
@@ -112,15 +141,6 @@ func _seat_is_bot(seat_id: int) -> bool:
 	if seat == null:
 		return false
 	return seat.is_bot
-
-
-func _any_bot() -> bool:
-	var snapshot := GameState.to_snapshot()
-	var seats: Array = snapshot.get("seats", [])
-	for raw: Variant in seats:
-		if raw is Dictionary and bool((raw as Dictionary).get("is_bot", false)):
-			return true
-	return false
 
 
 func _parse() -> void:

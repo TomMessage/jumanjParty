@@ -20,6 +20,8 @@ def canon(state: dict) -> str:
         "seed": state["seed"],
         "version": state["version"],
         "seats": seats,
+        "board": state.get("board", {}),
+        "lobby": state.get("lobby", {}),
     }
     return json.dumps(payload, sort_keys=True)
 

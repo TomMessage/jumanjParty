@@ -55,7 +55,15 @@ func broadcast_state(snapshot: Dictionary) -> void:
 
 
 func send_input(action: Dictionary) -> void:
-	input_received.emit(_peer_id, action)
+	if _hosting:
+		input_received.emit(_peer_id, action)
+		return
+	if _driver != null:
+		_driver.submit_input(action)
+
+
+func deliver_input(peer_id: int, action: Dictionary) -> void:
+	input_received.emit(peer_id, action)
 
 
 func disconnect_peer(peer_id: int) -> void:
