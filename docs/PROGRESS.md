@@ -35,3 +35,10 @@ The host keeps a lobby of joined seats, ready names, and the start of a night. C
 Tests: a guest cannot start the lobby or roll someone else's seat; a two-seat night survives a disconnect and round-trips; the 3-instance probe plays one turn each, replaces one client with a bot, and matches the final board.
 Risk: the probe is one short night on localhost, not a long match or a Steam lobby. A client that never sends its roll leaves the host waiting.
 Next: Phase 6, Steam. Do not start it in this branch.
+
+## Phase 6 — Steam
+
+`SteamNetwork` talks to GodotSteam when the singleton and `SteamMultiplayerPeer` are present: a friends-only lobby, invites, the overlay invite dialog, and a host-relayed sockets peer. After results the host can request `FIRST_NIGHT`, `TRIAL_CROWN`, `TABLE_SURVIVOR`, and `FULL_TABLE`, and rich presence can publish the phase. None of that is stored or published unless Steam returns success.
+Tests: an unready runtime refuses host, join, invite, and relay; asking for Steam falls back to ENet or local and a bot night still ranks a trial; deeds stay pending; presence stays unpublished. The three-instance ENet probe is unchanged.
+Risk: this environment has no GodotSteam binary, Steamworks SDK, app id, or logged-in client, so `steamInitEx` is never called. See `docs/BLOCKERS.md`. A green gate here is the fallback, not a live lobby.
+Next: Phase 7, the game master. Do not start it in this branch.

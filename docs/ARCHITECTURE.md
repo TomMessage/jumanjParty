@@ -28,9 +28,15 @@ A disconnected seat is marked `is_bot` on the host and that snapshot is broadcas
 
 - `LocalNetwork` — hot-seat and unit tests, in-process.
 - `ENetNetwork` — host-authoritative peers. The driver node is mounted at `/root/Network/ENetDriver` so RPCs share one path. Filename `e_net_network.gd` keeps the `ENet` acronym while satisfying the linter's snake-to-Pascal rule.
-- `SteamNetwork` — returns `ERR_UNAVAILABLE` until Phase 6. No GodotSteam addon yet.
+- `SteamNetwork` — GodotSteam lobbies, invites, and the relay. Without the addon it returns `ERR_UNAVAILABLE`.
 
 `tools/validate.sh` launches one host and two clients on localhost. The host opens a lobby on the connected seats, starts a one-turn night, drops one client, and the replacement bot finishes that seat. The surviving client sends its own roll or shop. The host resolves dice, trials, and tokens. Final snapshots match, including the board and the lobby, with exactly one bot seat.
+
+`SteamRuntime` is the only door to GodotSteam. It looks for the `Steam` singleton and `SteamMultiplayerPeer`, then calls `steamInitEx` with the app id from `STEAM_APP_ID` or `res://steam_appid.txt`. A missing piece stops there: nothing is marked ready, and `steamInitEx` is not called. When init does succeed and the client is logged on, the host creates a friends-only lobby and `SteamDriver` opens `SteamMultiplayerPeer.host_with_lobby` with `server_relay`, so session traffic rides Steam's relay through the host. Invites use `inviteUserToLobby` or the overlay dialog. A launch argument `+connect_lobby <id>` is a join. Clients still only send input.
+
+`SteamDeeds` can ask Steam to store `FIRST_NIGHT`, `TRIAL_CROWN`, `TABLE_SURVIVOR`, and `FULL_TABLE` after a results snapshot. `SteamPresence` can publish `status`, `steam_display`, and `connect`. Both keep the request locally and stay unpublished until Steam returns success. They do not change tokens, rankings, or the snapshot.
+
+`Network.open_transport("steam", port)` uses that seam. If it is not ready, a positive port falls back to `ENetNetwork` and port 0 falls back to `LocalNetwork`. `BOARD_TRANSPORT=steam` or `enet` selects the boot transport; an unset variable stays on the local host. Gameplay never waits on Steam. The live lobby cannot be opened in an environment with no GodotSteam binary, Steamworks SDK, app id, or logged-on client. That gap is `docs/BLOCKERS.md`.
 
 ## Board
 

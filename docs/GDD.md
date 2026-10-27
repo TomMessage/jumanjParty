@@ -32,4 +32,4 @@ The hot-seat night is playable. After each roll or shop, the whole table falls i
 
 ## Out of scope until later phases
 
-Steam, voice, and the release build. GodotSteam is still a stub.
+Voice and the release build. Steam lobbies, invites, the relay, achievements, and rich presence are wired, and they stay quiet when GodotSteam or a logged-in app is missing (`docs/BLOCKERS.md`). Hot-seat and ENet keep running.
