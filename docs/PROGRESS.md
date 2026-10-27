@@ -49,3 +49,10 @@ The keeper speaks from the snapshot: a wake line, a board event, a pocket every 
 Tests: a pocket and a slide leave the dice stream alone; an equal failure replaces the replay; two bot nights match with the lamp at 0 and at 1; post intensity scales and still zeroes when effects are off; rebinding the keeper key keeps the joypad button.
 Risk: the live Steam lobby is still blocked (`docs/BLOCKERS.md`). This branch does not pretend it is online. A cheat changes tokens, so a night is deterministic only when both sides share the host snapshot.
 Next: Phase 8, release readiness. Do not start it in this branch.
+
+## Phase 8 — Release readiness
+
+The frame probe records FPS, draw calls, static memory, and time to first frame for the menu, the match, and Vine Rush, on Forward+ and Compatibility, and it checks that each trial's simulated length stays inside 30–90 seconds. Official Godot 4.7.2 templates export an embedded Linux binary and a Windows exe. Store copy, a demo plan, and a trailer shot list are in `docs/STEAM_RELEASE.md`. No Steam app id is assigned.
+Tests: `tools/validate.sh` runs the new probe with the rest of the gate. The Linux build booted headless and stayed up. The Windows file is a PE32+ image and was not executed here.
+Risk: llvmpipe does not hold 60 FPS on the candlelit table, and there is no discrete GPU or Steam Deck in this environment, so that target is not claimed. The live Steam lobby is still blocked. Both are in `docs/BLOCKERS.md`.
+This is the last planned phase. Do not merge it to main from this branch.

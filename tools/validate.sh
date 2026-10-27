@@ -98,6 +98,28 @@ python3 "$ROOT/tools/compare_net_state.py" "$OUT"
 echo "== trials =="
 "$GODOT" --headless --path "$ROOT" -s res://tests/probes/trial_probe.gd
 
+perf_with() {
+	local method="$1"
+	local dest="$2"
+	local extra=()
+	if [[ "$method" == "forward" ]]; then
+		export VK_ICD_FILENAMES="${VK_ICD_FILENAMES:-/usr/share/vulkan/icd.d/lvp_icd.json}"
+		extra=(--rendering-driver vulkan --rendering-method forward_plus)
+	else
+		export LIBGL_ALWAYS_SOFTWARE=1
+		extra=(--rendering-driver opengl3 --rendering-method gl_compatibility)
+	fi
+	timeout 240 "$GODOT" "${extra[@]}" --display-driver x11 --path "$ROOT" \
+		--resolution 1280x720 --audio-driver Dummy \
+		-s res://tests/probes/perf_audit.gd -- --out="$dest/report-${method}.txt"
+}
+
+echo "== perf =="
+PERF_OUT="${PERF_DIR:-$ROOT/build/perf}"
+mkdir -p "$PERF_OUT"
+perf_with forward "$PERF_OUT"
+perf_with compatibility "$PERF_OUT"
+
 echo "== visual =="
 VISUAL_OUT="${VISUAL_QA_DIR:-$ROOT/build/visual-qa}"
 run_visual "$VISUAL_OUT"

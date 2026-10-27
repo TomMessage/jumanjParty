@@ -50,6 +50,17 @@ Invoke-Checked @(
 	"godot", "--headless", "--path", $Root, "-s", "res://tests/probes/trial_probe.gd"
 )
 
+$Perf = if ($env:PERF_DIR) { $env:PERF_DIR } else { Join-Path $Root "build\perf" }
+New-Item -ItemType Directory -Force -Path $Perf | Out-Null
+& godot --rendering-driver vulkan --rendering-method forward_plus --path $Root `
+	--resolution 1280x720 --audio-driver Dummy `
+	-s res://tests/probes/perf_audit.gd -- --out="$Perf\report-forward.txt"
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& godot --rendering-driver opengl3 --rendering-method gl_compatibility --path $Root `
+	--resolution 1280x720 --audio-driver Dummy `
+	-s res://tests/probes/perf_audit.gd -- --out="$Perf\report-compatibility.txt"
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 $Visual = if ($env:VISUAL_QA_DIR) { $env:VISUAL_QA_DIR } else { Join-Path $Root "build\visual-qa" }
 New-Item -ItemType Directory -Force -Path $Visual | Out-Null
 & godot --rendering-driver opengl3 --rendering-method gl_compatibility --path $Root `

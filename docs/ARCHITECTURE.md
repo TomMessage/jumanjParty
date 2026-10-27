@@ -72,4 +72,8 @@ Shadows and volumetric fog are off in this slice so the Compatibility renderer a
 
 ## Validation
 
-`tools/validate.sh` (and `validate.ps1`) runs import, `gdformat --check`, `gdlint`, GUT, a 120-frame smoke test, the ENet session, the trial probe, then visual captures. A phase is done only when that script exits 0.
+`tools/validate.sh` (and `validate.ps1`) runs import, `gdformat --check`, `gdlint`, GUT, a 120-frame smoke test, the ENet session, the trial probe, a frame-cost probe on Forward+ and Compatibility, then visual captures. A phase is done only when that script exits 0.
+
+## Release
+
+`export_presets.cfg` has two shipping presets, Linux and Windows Desktop, both x86_64, with the pack embedded. They exclude `tests/`, `addons/gut/`, `build/`, and `docs/`. `tools/export_release.sh` runs both against the official Godot 4.7.2 export templates. Templates are not committed. The binaries land in `build/export/`, which is gitignored. There is no Steam app id in the presets or in the repo. Store copy, the demo plan, and the trailer shot list are `docs/STEAM_RELEASE.md`. Measured frame cost is `docs/PERF.md`. The license and rule pass is `docs/REVIEW.md`.
