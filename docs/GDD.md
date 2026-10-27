@@ -19,16 +19,17 @@ Inscryption is an atmosphere reference only. No names, characters, cards, or ass
 3. Each round, everyone enters a 30–90 second trial. Rank pays tokens.
 4. The last survivor, or the richest seat when the board says so, wins.
 
-Phase 1 and 2 do not play that match yet. They lock the project, the network seam, the trial contract, and the look of the room.
+The hot-seat night is playable, and each trial can be opened on its own. The board does not yet send the party into a trial between rounds.
 
 ## What you can do in this slice
 
 - Sit at the main menu, which is the near side of the table.
-- Choose **Sit Down** (the wide table view), **Trim Lamp** (post and PS1 effects on or off), or **Leave**.
+- Choose **Sit Down** (starts the hot-seat night), **Trim Lamp** (post and PS1 effects on or off), or **Leave**.
 - Look around with keys 1–4 or the gamepad shoulders / face buttons: table, board, game master, window.
 - See the hooded game master placeholder. The role has no borrowed name.
 - Sit down into a hot-seat night: pick 2–4 seats and how many are human. The rest are bots. Roll, buy from the shop, draw event cards, and see who the night keeps.
+- Open a scene under `src/minigames/<world>/` to play that trial. The camera falls onto the felt, then bots run the 30–90 second diorama.
 
 ## Out of scope until later phases
 
-Ten real trials, ENet lobbies beyond the session probe, Steam, voice, and the release build. The board does not enter a trial between rounds yet.
+ENet lobbies beyond the session probe, Steam, voice, and the release build. The board does not enter a trial between rounds yet.

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TrialCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/minigames/_base/trial_card.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+trial_id = "vine_rush"
+world_name = "jungle"
+kind = "race"
+title = "VINE RUSH"
+duration_seconds = 36
+scene_path = "res://src/minigames/jungle/vine_rush.tscn"
+script_path = "res://src/minigames/jungle/vine_rush.gd"
+salt = 3
+pace = 1.05
+pressure = 1.0
+ground = Color(0.2, 0.36, 0.14, 1)
+sky = Color(0.04, 0.07, 0.03, 1)
+accent = Color(0.82, 0.7, 0.25, 1)

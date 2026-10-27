@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TrialCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/minigames/_base/trial_card.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+trial_id = "lava_hurdles"
+world_name = "volcano"
+kind = "race"
+title = "LAVA HURDLES"
+duration_seconds = 42
+scene_path = "res://src/minigames/volcano/lava_hurdles.tscn"
+script_path = "res://src/minigames/volcano/lava_hurdles.gd"
+salt = 11
+pace = 1.2
+pressure = 1.0
+ground = Color(0.55, 0.22, 0.1, 1)
+sky = Color(0.1, 0.03, 0.02, 1)
+accent = Color(1.0, 0.42, 0.1, 1)

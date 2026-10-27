@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TrialCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/minigames/_base/trial_card.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+trial_id = "candle_dodge"
+world_name = "haunted"
+kind = "dodge"
+title = "CANDLE DODGE"
+duration_seconds = 44
+scene_path = "res://src/minigames/haunted/candle_dodge.tscn"
+script_path = "res://src/minigames/haunted/candle_dodge.gd"
+salt = 7
+pace = 0.95
+pressure = 1.2
+ground = Color(0.46, 0.36, 0.42, 1)
+sky = Color(0.03, 0.02, 0.05, 1)
+accent = Color(0.45, 0.78, 0.4, 1)

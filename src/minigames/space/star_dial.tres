@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TrialCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/minigames/_base/trial_card.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+trial_id = "star_dial"
+world_name = "space"
+kind = "puzzle"
+title = "STAR DIAL"
+duration_seconds = 52
+scene_path = "res://src/minigames/space/star_dial.tscn"
+script_path = "res://src/minigames/space/star_dial.gd"
+salt = 6
+pace = 1.0
+pressure = 1.35
+ground = Color(0.34, 0.38, 0.55, 1)
+sky = Color(0.015, 0.02, 0.05, 1)
+accent = Color(0.55, 0.75, 0.95, 1)

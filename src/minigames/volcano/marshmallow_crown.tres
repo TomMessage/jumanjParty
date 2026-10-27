@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TrialCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/minigames/_base/trial_card.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+trial_id = "marshmallow_crown"
+world_name = "volcano"
+kind = "absurd"
+title = "MARSHMALLOW CROWN"
+duration_seconds = 72
+scene_path = "res://src/minigames/volcano/marshmallow_crown.tscn"
+script_path = "res://src/minigames/volcano/marshmallow_crown.gd"
+salt = 13
+pace = 1.0
+pressure = 0.75
+ground = Color(0.5, 0.24, 0.12, 1)
+sky = Color(0.08, 0.02, 0.015, 1)
+accent = Color(0.95, 0.78, 0.55, 1)

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TrialCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/minigames/_base/trial_card.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+trial_id = "gravy_orbit"
+world_name = "space"
+kind = "absurd"
+title = "GRAVY ORBIT"
+duration_seconds = 64
+scene_path = "res://src/minigames/space/gravy_orbit.tscn"
+script_path = "res://src/minigames/space/gravy_orbit.gd"
+salt = 9
+pace = 1.0
+pressure = 1.4
+ground = Color(0.3, 0.34, 0.5, 1)
+sky = Color(0.02, 0.03, 0.06, 1)
+accent = Color(0.72, 0.45, 0.22, 1)

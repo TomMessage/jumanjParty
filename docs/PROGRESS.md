@@ -20,3 +20,10 @@ Playable 16-space loop on the same candlelit table: dice, pawns, gain/loss/trap/
 Tests: catalog coverage, seeded bot nights, human turns, shop buys, shield, swap, cards, snapshot round-trip, and a disconnect that lets the bot finish.
 Risk: the ENet probe still compares a short session, not this full night. A long hot-seat with every seat skipping can end before a human rolls again, which is intended.
 Next: Phase 4, the trials. Do not start it in this branch.
+
+## Phase 4 — Trials
+
+Ten real-time dioramas, two per world (jungle, desert, haunted, space, volcano): vine rush and lava hurdles (race), sting lanes and candle dodge (reflex), sundial lock and star dial (puzzle), beetle rain and portrait waves (survival), gravy orbit and marshmallow crown (absurd). Each has a scene, card, bot, and test, runs 30–90 seconds, and opens with a fall onto the felt. The trial builds the ranking. The hot-seat night does not enter a trial yet.
+Tests: one finish test per trial, a bot-versus-reckless check for each genre, a repeated seed, the fall, catalog coverage, and the probe over every catalog script.
+Risk: these trials are not synced into the match or the ENet session. A diorama whose floor and sky stop contrasting can fail the image guard.
+Next: Phase 5, online play. Do not start it in this branch.

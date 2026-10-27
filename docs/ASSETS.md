@@ -5,6 +5,7 @@ No third-party models, textures, audio, or fonts are imported. Everything in the
 | Asset | Source | License |
 | --- | --- | --- |
 | Room, table, board, pawns, candles, game master | Procedural meshes in `src/render/room_set.gd` and `src/gamemaster/keeper_placeholder.gd` | Original, project code |
+| Trial dioramas | Procedural meshes in `src/minigames` | Original, project code |
 | PS1 and post shaders | `src/render/*.gdshader` | Original, project code |
 | Menu and plaque text | Godot default `Label3D` font (engine built-in) | Godot Engine, MIT |
 | Window icon | `icon.svg` | Original, project code |

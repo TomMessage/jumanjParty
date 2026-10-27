@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TrialCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/minigames/_base/trial_card.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+trial_id = "beetle_rain"
+world_name = "jungle"
+kind = "waves"
+title = "BEETLE RAIN"
+duration_seconds = 48
+scene_path = "res://src/minigames/jungle/beetle_rain.tscn"
+script_path = "res://src/minigames/jungle/beetle_rain.gd"
+salt = 5
+pace = 1.1
+pressure = 1.15
+ground = Color(0.28, 0.42, 0.18, 1)
+sky = Color(0.03, 0.05, 0.03, 1)
+accent = Color(0.55, 0.62, 0.2, 1)

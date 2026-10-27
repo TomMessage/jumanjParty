@@ -40,7 +40,9 @@ Turns are hot-seat on `LocalNetwork`. Bots roll and shop through `BotPolicy` on 
 
 ## Trials
 
-`MinigameBase` owns a simulated clock. `tick(delta)` accumulates time and finishes at `planned_ms()` (30–90 seconds). `ContractTrial` is the harness fixture registered in `TrialCatalog`: bots score seats, and the result is a total ranking. Phase 4 adds real scenes to the catalog. The probe does not special-case the fixture. It refuses a trial that finishes in one tick or emits an invalid ranking.
+`MinigameBase` owns a simulated clock. `tick(delta)` accumulates time and finishes at `planned_ms()` (30–90 seconds). `TrialCatalog` lists `ContractTrial` plus ten `TrialCard` resources. Each card points at a scene, a `TrialBody` script, and a duration. The body builds a field (race, dodge, puzzle, waves, or absurd), asks that trial's bot for every seat, and ranks the scores. The ranking is built inside the trial. The field does not read render settings, so turning effects off does not change it.
+
+`TrialView` is the diorama. The camera starts above the felt and lands within a few frames. That fall is presentation only. The probe still instantiates each catalog script with `Script.new()`, plays it with bots, and refuses a one-tick finish or an invalid ranking. It does not special-case `ContractTrial`. The hot-seat board does not enter these trials yet. Phase 5 is where a round would sync one.
 
 ## Rendering
 
@@ -50,7 +52,7 @@ Shadows and volumetric fog are off in this slice so the Compatibility renderer a
 
 ## Scenes
 
-`scenes/menu.tscn`, `table.tscn`, `board_view.tscn`, and `game_master.tscn` share `stage_scene.gd`. They differ by camera preset and whether the diegetic menu is interactive. `PlayableScenes` is the list the smoke test and visual probe share.
+`scenes/menu.tscn`, `table.tscn`, `board_view.tscn`, and `game_master.tscn` share `stage_scene.gd`. They differ by camera preset and whether the diegetic menu is interactive. `PlayableScenes` is the list the smoke test and visual probe share. It includes the room shots, the match, and each trial scene from `TrialCatalog`.
 
 ## Validation
 
