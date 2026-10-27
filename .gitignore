@@ -1,0 +1,7 @@
+.godot/
+export/
+build/
+*.tmp
+.DS_Store
+*.translation
+.gut_editor_config.json

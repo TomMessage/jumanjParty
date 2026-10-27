@@ -1,0 +1,14 @@
+---
+description: Permanent rules for Welcome to the Board
+alwaysApply: true
+---
+
+- GDScript typed, `snake_case` files/variables/functions, `PascalCase` classes, `UPPER_CASE` constants.
+- One responsibility per script, ~300 lines max. No game logic in UI scenes.
+- Signals rather than cross-references. `@export` and `%UniqueNames` rather than long `get_node` chains.
+- Authoritative gameplay runs on the host only. Clients never decide results.
+- Heavy visual effects (shaders, post-process) are always disableable and never affect logic.
+- Each feature lands with tests in the same commit. Commits are atomic: `type(scope): description`.
+- Architecture decisions are recorded in `docs/ARCHITECTURE.md`.
+- Inscryption is atmosphere only. Do not reuse its assets, names, characters, or text.
+- A phase is finished only when `tools/validate.sh` exits 0. Never delete or disable a test to pass the gate.
