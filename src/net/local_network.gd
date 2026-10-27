@@ -16,18 +16,18 @@ func close_session() -> void:
 
 func send_input(action: Dictionary) -> void:
 	var sender := int(action.get("seat", _peer_id))
-	input_received.emit(sender, action)
+	_emit_input_received(sender, action)
 
 
 func broadcast_state(snapshot: Dictionary) -> void:
 	if not _hosting:
 		return
 	_last_snapshot = snapshot.duplicate(true)
-	state_received.emit(_last_snapshot)
+	_emit_state_received(_last_snapshot)
 
 
 func disconnect_peer(peer_id: int) -> void:
-	peer_disconnected.emit(peer_id)
+	_emit_peer_disconnected(peer_id)
 
 
 func last_snapshot() -> Dictionary:

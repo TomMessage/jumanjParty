@@ -46,5 +46,21 @@ func broadcast_state(_snapshot: Dictionary) -> void:
 	return
 
 
-func disconnect_peer(_peer_id: int) -> void:
+func disconnect_peer(_dropped_id: int) -> void:
 	return
+
+
+func _emit_peer_connected(peer_id: int) -> void:
+	peer_connected.emit(peer_id)
+
+
+func _emit_peer_disconnected(peer_id: int) -> void:
+	peer_disconnected.emit(peer_id)
+
+
+func _emit_state_received(snapshot: Dictionary) -> void:
+	state_received.emit(snapshot)
+
+
+func _emit_input_received(peer_id: int, action: Dictionary) -> void:
+	input_received.emit(peer_id, action)

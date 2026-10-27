@@ -139,12 +139,12 @@ func _on_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, response:
 		lobby_failed.emit(response)
 		return
 	_remember(lobby_id)
-	var owner := owner_id()
-	if owner == 0:
+	var host_id := owner_id()
+	if host_id == 0:
 		_error = "Steam lobby has no host."
 		lobby_failed.emit(ERR_UNCONFIGURED)
 		return
-	lobby_ready.emit(lobby_id, owner == _steam_id())
+	lobby_ready.emit(lobby_id, host_id == _steam_id())
 
 
 func _remember(lobby_id: int) -> void:

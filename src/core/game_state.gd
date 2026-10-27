@@ -70,7 +70,7 @@ func replace_with_bot(seat_id: int) -> void:
 		return
 	seat.is_bot = true
 	_version += 1
-	EventBus.seat_replaced_by_bot.emit(seat_id)
+	EventBus.notify_seat_replaced(seat_id)
 	Network.broadcast_state(to_snapshot())
 	if not _rules.state.active:
 		return
@@ -116,8 +116,8 @@ func apply_snapshot(snapshot: Dictionary) -> void:
 	if lobby_raw is Dictionary:
 		_lobby = LobbyTable.from_dict(lobby_raw)
 	if phase_differs:
-		EventBus.phase_changed.emit(_phase)
-	EventBus.snapshot_applied.emit(_version)
+		EventBus.notify_phase(_phase)
+	EventBus.notify_snapshot(_version)
 
 
 func to_snapshot() -> Dictionary:
@@ -272,5 +272,5 @@ func _publish_board() -> void:
 func _publish(announce_phase: bool) -> void:
 	_version += 1
 	if announce_phase:
-		EventBus.phase_changed.emit(_phase)
+		EventBus.notify_phase(_phase)
 	Network.broadcast_state(to_snapshot())

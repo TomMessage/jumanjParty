@@ -51,23 +51,23 @@ func broadcast_state(snapshot: Dictionary) -> void:
 		return
 	if _driver != null:
 		_driver.send_state(snapshot)
-	state_received.emit(snapshot)
+	_emit_state_received(snapshot)
 
 
 func send_input(action: Dictionary) -> void:
 	if _hosting:
-		input_received.emit(_peer_id, action)
+		_emit_input_received(_peer_id, action)
 		return
 	if _driver != null:
 		_driver.submit_input(action)
 
 
 func deliver_input(peer_id: int, action: Dictionary) -> void:
-	input_received.emit(peer_id, action)
+	_emit_input_received(peer_id, action)
 
 
 func disconnect_peer(peer_id: int) -> void:
-	peer_disconnected.emit(peer_id)
+	_emit_peer_disconnected(peer_id)
 
 
 func mark_host(peer_id: int) -> void:
@@ -84,16 +84,16 @@ func notify_remote(peer_id: int, connected: bool) -> void:
 	if connected:
 		if not _remotes.has(peer_id):
 			_remotes.append(peer_id)
-		peer_connected.emit(peer_id)
+		_emit_peer_connected(peer_id)
 		return
 	var index := _remotes.find(peer_id)
 	if index >= 0:
 		_remotes.remove_at(index)
-	peer_disconnected.emit(peer_id)
+	_emit_peer_disconnected(peer_id)
 
 
 func deliver_state(snapshot: Dictionary) -> void:
-	state_received.emit(snapshot)
+	_emit_state_received(snapshot)
 
 
 func notify_local_drop() -> void:

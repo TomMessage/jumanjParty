@@ -154,10 +154,10 @@ func _parse() -> void:
 			_out = arg.trim_prefix("--out=")
 
 
-func _write_text(name: String, body: String) -> void:
-	var file := FileAccess.open(_out.path_join(name), FileAccess.WRITE)
+func _write_text(file_name: String, body: String) -> void:
+	var file := FileAccess.open(_out.path_join(file_name), FileAccess.WRITE)
 	if file == null:
-		print("ENET_FAIL write %s" % name)
+		print("ENET_FAIL write %s" % file_name)
 		get_tree().quit(1)
 		return
 	file.store_string(body)

@@ -71,5 +71,5 @@ func save_settings() -> int:
 	cfg.set_value("audio", "master_linear", master_linear)
 	var saved := cfg.save(settings_path)
 	if saved == OK:
-		EventBus.settings_changed.emit()
+		EventBus.notify_settings()
 	return saved

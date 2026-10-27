@@ -90,12 +90,12 @@ func broadcast_state(snapshot: Dictionary) -> void:
 		return
 	if _driver != null:
 		_driver.send_state(snapshot)
-	state_received.emit(snapshot)
+	_emit_state_received(snapshot)
 
 
 func send_input(action: Dictionary) -> void:
 	if _hosting:
-		input_received.emit(_peer_id, action)
+		_emit_input_received(_peer_id, action)
 		return
 	if _driver != null:
 		_driver.submit_input(action)
@@ -104,7 +104,7 @@ func send_input(action: Dictionary) -> void:
 func disconnect_peer(peer_id: int) -> void:
 	if _driver != null and relay_open():
 		_driver.announce_drop(peer_id)
-	peer_disconnected.emit(peer_id)
+	_emit_peer_disconnected(peer_id)
 
 
 func blocker() -> String:
@@ -150,20 +150,20 @@ func notify_remote(peer_id: int, connected: bool) -> void:
 	if connected:
 		if not _remotes.has(peer_id):
 			_remotes.append(peer_id)
-		peer_connected.emit(peer_id)
+		_emit_peer_connected(peer_id)
 		return
 	var index := _remotes.find(peer_id)
 	if index >= 0:
 		_remotes.remove_at(index)
-	peer_disconnected.emit(peer_id)
+	_emit_peer_disconnected(peer_id)
 
 
 func deliver_state(snapshot: Dictionary) -> void:
-	state_received.emit(snapshot)
+	_emit_state_received(snapshot)
 
 
 func deliver_input(peer_id: int, action: Dictionary) -> void:
-	input_received.emit(peer_id, action)
+	_emit_input_received(peer_id, action)
 
 
 func notify_local_drop() -> void:
@@ -175,11 +175,11 @@ func dropped_locally() -> bool:
 	return _dropped_locally
 
 
-func _on_lobby(lobby_id: int, hosting: bool) -> void:
+func _on_lobby(opened_id: int, hosting: bool) -> void:
 	if relay_open():
 		return
 	if hosting:
-		_host_relay(lobby_id)
+		_host_relay(opened_id)
 		return
 	_join_relay()
 
@@ -189,11 +189,11 @@ func _on_lobby_failed(code: int) -> void:
 	_blocker = "Steam lobby failed (%d)." % code
 
 
-func _host_relay(lobby_id: int) -> void:
+func _host_relay(opened_id: int) -> void:
 	if _driver == null:
 		_blocker = "Steam relay node is not mounted."
 		return
-	var err := _driver.host_lobby(lobby_id)
+	var err := _driver.host_lobby(opened_id)
 	if err != OK:
 		_blocker = "Steam relay refused the lobby (%d)." % err
 

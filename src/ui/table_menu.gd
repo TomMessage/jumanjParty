@@ -22,16 +22,25 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action("ui_left") or event.is_action("ui_up"):
 		selection.move(-1)
 		_refresh()
-		get_viewport().set_input_as_handled()
+		_mark_handled()
 		return
 	if event.is_action("ui_right") or event.is_action("ui_down"):
 		selection.move(1)
 		_refresh()
-		get_viewport().set_input_as_handled()
+		_mark_handled()
 		return
 	if event.is_action("ui_accept"):
+		if not _mark_handled():
+			return
 		_activate()
-		get_viewport().set_input_as_handled()
+
+
+func _mark_handled() -> bool:
+	var viewport := get_viewport()
+	if viewport == null:
+		return false
+	viewport.set_input_as_handled()
+	return true
 
 
 func _build_parchment(world: Node3D) -> void:

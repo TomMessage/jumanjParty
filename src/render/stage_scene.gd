@@ -53,19 +53,26 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action("view_table"):
 		_apply_view("table")
-		get_viewport().set_input_as_handled()
+		_mark_handled()
 		return
 	if event.is_action("view_board"):
 		_apply_view("board")
-		get_viewport().set_input_as_handled()
+		_mark_handled()
 		return
 	if event.is_action("view_keeper"):
 		_apply_view("keeper")
-		get_viewport().set_input_as_handled()
+		_mark_handled()
 		return
 	if event.is_action("view_window"):
 		_apply_view("window")
-		get_viewport().set_input_as_handled()
+		_mark_handled()
+
+
+func _mark_handled() -> void:
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	viewport.set_input_as_handled()
 
 
 func _apply_view(next: String) -> void:

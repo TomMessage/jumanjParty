@@ -48,7 +48,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if str(board.get("awaiting", "")) == "roll" and event.is_action("ui_accept"):
 		Network.send_input({"kind": "roll", "seat": int(board.get("turn_seat", 0))})
-		get_viewport().set_input_as_handled()
+		_mark_handled()
+
+
+func _mark_handled() -> void:
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	viewport.set_input_as_handled()
 
 
 func _setup_input(event: InputEvent) -> void:
@@ -57,7 +64,7 @@ func _setup_input(event: InputEvent) -> void:
 		return
 	if event.is_action("ui_cancel"):
 		_tuning = true
-		get_viewport().set_input_as_handled()
+		_mark_handled()
 		_show_options()
 		return
 	if event.is_action("ui_left"):
@@ -72,7 +79,7 @@ func _setup_input(event: InputEvent) -> void:
 		_begin()
 	else:
 		return
-	get_viewport().set_input_as_handled()
+	_mark_handled()
 	_show_setup()
 
 
@@ -80,7 +87,7 @@ func _result_input(event: InputEvent) -> void:
 	if not event.is_action("ui_accept"):
 		return
 	_begin()
-	get_viewport().set_input_as_handled()
+	_mark_handled()
 
 
 func _shop_input(event: InputEvent, board: Dictionary) -> void:
@@ -93,7 +100,7 @@ func _shop_input(event: InputEvent, board: Dictionary) -> void:
 		_send_shop(board)
 	else:
 		return
-	get_viewport().set_input_as_handled()
+	_mark_handled()
 	_show_turn(board)
 
 
@@ -142,7 +149,7 @@ func _send_shop(board: Dictionary) -> void:
 func _tune(event: InputEvent) -> void:
 	if event.is_action("ui_cancel") or event.is_action("ui_accept"):
 		_tuning = false
-		get_viewport().set_input_as_handled()
+		_mark_handled()
 		_show_setup()
 		return
 	var moved := false
@@ -160,7 +167,7 @@ func _tune(event: InputEvent) -> void:
 		moved = true
 	if not moved:
 		return
-	get_viewport().set_input_as_handled()
+	_mark_handled()
 	_show_options()
 
 
@@ -218,13 +225,13 @@ func _show_options() -> void:
 
 func _show_turn(board: Dictionary) -> void:
 	var seat := GameState.find_seat(int(board.get("turn_seat", 0)))
-	var name := "Seat"
+	var seat_name := "Seat"
 	var tokens := 0
 	if seat != null:
-		name = seat.display_name
+		seat_name = seat.display_name
 		tokens = seat.tokens
 	var step := str(board.get("awaiting", "roll"))
-	_prompt.set_text("%s   %d TOKENS" % [name, tokens], str(board.get("last_note", "")))
+	_prompt.set_text("%s   %d TOKENS" % [seat_name, tokens], str(board.get("last_note", "")))
 	if step == "shop":
 		_prompt.set_choices(_shop_labels(board), _shop_index)
 		return
@@ -233,15 +240,15 @@ func _show_turn(board: Dictionary) -> void:
 
 func _show_result(board: Dictionary) -> void:
 	var winner := GameState.find_seat(int(board.get("winner_id", 0)))
-	var name := "the table"
+	var winner_name := "the table"
 	if winner != null:
-		name = winner.display_name
+		winner_name = winner.display_name
 	var detail := str(board.get("worst_line", ""))
 	if detail == "":
 		detail = str(board.get("keeper_line", ""))
 	if detail == "":
 		detail = str(board.get("last_note", ""))
-	_prompt.set_text("SURVIVOR %s" % name, detail)
+	_prompt.set_text("SURVIVOR %s" % winner_name, detail)
 	_prompt.set_choices(PackedStringArray(["AGAIN"]), 0)
 
 
