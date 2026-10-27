@@ -68,8 +68,8 @@ func open_transport(kind: String, port: int) -> String:
 	return _start_local()
 
 
-func connect_steam(lobby_id: int) -> int:
-	var target := lobby_id
+func connect_steam(opened_lobby: int) -> int:
+	var target := opened_lobby
 	if target == 0:
 		target = _invite_argument()
 	if target == 0:
@@ -193,7 +193,7 @@ func _note_fallback(why: String, landed: String) -> void:
 func _connect_token() -> String:
 	if not _backend is SteamNetwork:
 		return ""
-	var lobby := (_backend as SteamNetwork).lobby_id()
+	var lobby := (_backend as SteamNetwork).current_lobby()
 	if lobby == 0:
 		return ""
 	return "+connect_lobby %d" % lobby

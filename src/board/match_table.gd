@@ -52,10 +52,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _mark_handled() -> void:
-	var viewport := get_viewport()
+	if not is_inside_tree():
+		return
+	var viewport: Variant = get_viewport()
 	if viewport == null:
 		return
-	viewport.set_input_as_handled()
+	viewport.call("set_input_as_handled")
 
 
 func _setup_input(event: InputEvent) -> void:

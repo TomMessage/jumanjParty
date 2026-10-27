@@ -27,8 +27,8 @@ func test_guest_cannot_start_or_rename_the_host() -> void:
 	GameState.handle_input(8, {"kind": "start_match", "seed": 3, "turns_each": 0})
 	assert_eq(GameState.get_version(), version)
 	assert_eq(GameState.find_seat(1).display_name, "Host")
-	var ready: Array = GameState.to_snapshot()["lobby"]["ready"]
-	assert_true(ready.has(8))
+	var ready_seats: Array = GameState.to_snapshot()["lobby"]["ready"]
+	assert_true(ready_seats.has(8))
 	assert_true(bool(GameState.to_snapshot()["lobby"]["open"]))
 
 

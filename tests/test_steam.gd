@@ -82,7 +82,7 @@ func test_invite_is_refused_on_the_fallback() -> void:
 	var steam := SteamNetwork.new()
 	assert_eq(steam.invite(12, true), ERR_UNAVAILABLE)
 	assert_false(steam.relay_open())
-	assert_eq(steam.lobby_id(), 0)
+	assert_eq(steam.current_lobby(), 0)
 
 
 func test_deeds_stay_pending_offline() -> void:

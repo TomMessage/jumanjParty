@@ -63,7 +63,7 @@ func start_client(address: String, _port: int) -> int:
 
 func close_session() -> void:
 	_hosting = false
-	_peer_id = 0
+	_self_peer = 0
 	_dropped_locally = false
 	_remotes = PackedInt32Array()
 	if _lobby != null:
@@ -95,7 +95,7 @@ func broadcast_state(snapshot: Dictionary) -> void:
 
 func send_input(action: Dictionary) -> void:
 	if _hosting:
-		_emit_input_received(_peer_id, action)
+		_emit_input_received(_self_peer, action)
 		return
 	if _driver != null:
 		_driver.submit_input(action)
@@ -111,7 +111,7 @@ func blocker() -> String:
 	return _blocker
 
 
-func lobby_id() -> int:
+func current_lobby() -> int:
 	if _lobby == null:
 		return 0
 	return _lobby.current_id()
@@ -138,12 +138,12 @@ func invite(steam_id: int, overlay: bool) -> int:
 
 func mark_host(peer_id: int) -> void:
 	_hosting = true
-	_peer_id = peer_id
+	_self_peer = peer_id
 
 
 func mark_client(peer_id: int) -> void:
 	_hosting = false
-	_peer_id = peer_id
+	_self_peer = peer_id
 
 
 func notify_remote(peer_id: int, connected: bool) -> void:

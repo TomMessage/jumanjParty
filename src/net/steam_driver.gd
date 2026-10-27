@@ -17,11 +17,11 @@ func shutdown() -> void:
 		multiplayer.multiplayer_peer = null
 
 
-func host_lobby(lobby_id: int) -> int:
+func host_lobby(opened_lobby: int) -> int:
 	var peer := _make_peer()
 	if peer == null:
 		return ERR_UNAVAILABLE
-	var err := _host_peer(peer, lobby_id)
+	var err := _host_peer(peer, opened_lobby)
 	if err != OK:
 		return err
 	_adopt(peer)
@@ -102,10 +102,10 @@ func _make_peer() -> MultiplayerPeer:
 	return null
 
 
-func _host_peer(peer: MultiplayerPeer, lobby_id: int) -> int:
+func _host_peer(peer: MultiplayerPeer, opened_lobby: int) -> int:
 	_set_relay(peer)
 	if peer.has_method("host_with_lobby"):
-		var hosted := int(peer.call("host_with_lobby", lobby_id))
+		var hosted := int(peer.call("host_with_lobby", opened_lobby))
 		if hosted != OK:
 			return hosted
 		_set_relay(peer)

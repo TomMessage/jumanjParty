@@ -1,7 +1,7 @@
 class_name SteamLobby
 extends Node
 
-signal lobby_ready(lobby_id: int, hosting: bool)
+signal lobby_ready(opened_lobby: int, hosting: bool)
 signal lobby_failed(code: int)
 
 var _api: Variant = null
@@ -21,8 +21,8 @@ func create_friends(slots: int) -> int:
 	return OK
 
 
-func join(lobby_id: int) -> int:
-	if lobby_id <= 0:
+func join(opened_lobby: int) -> int:
+	if opened_lobby <= 0:
 		_error = "Steam join needs a lobby id."
 		return ERR_INVALID_PARAMETER
 	var attached := _attach()
@@ -32,7 +32,7 @@ func join(lobby_id: int) -> int:
 	if not api.has_method("joinLobby"):
 		_error = "GodotSteam cannot join lobbies."
 		return ERR_UNAVAILABLE
-	api.call("joinLobby", lobby_id)
+	api.call("joinLobby", opened_lobby)
 	return OK
 
 
@@ -124,38 +124,38 @@ func _attach() -> int:
 	return OK
 
 
-func _on_lobby_created(result: int, lobby_id: int) -> void:
+func _on_lobby_created(result: int, opened_lobby: int) -> void:
 	if result != SteamRuntime.RESULT_OK:
 		_error = "Steam lobby create failed (%d)." % result
 		lobby_failed.emit(result)
 		return
-	_remember(lobby_id)
-	lobby_ready.emit(lobby_id, true)
+	_remember(opened_lobby)
+	lobby_ready.emit(opened_lobby, true)
 
 
-func _on_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, response: int) -> void:
+func _on_lobby_joined(opened_lobby: int, _permissions: int, _locked: bool, response: int) -> void:
 	if response != SteamRuntime.ENTER_OK:
 		_error = "Steam lobby join failed (%d)." % response
 		lobby_failed.emit(response)
 		return
-	_remember(lobby_id)
+	_remember(opened_lobby)
 	var host_id := owner_id()
 	if host_id == 0:
 		_error = "Steam lobby has no host."
 		lobby_failed.emit(ERR_UNCONFIGURED)
 		return
-	lobby_ready.emit(lobby_id, host_id == _steam_id())
+	lobby_ready.emit(opened_lobby, host_id == _steam_id())
 
 
-func _remember(lobby_id: int) -> void:
-	_lobby_id = lobby_id
+func _remember(opened_lobby: int) -> void:
+	_lobby_id = opened_lobby
 	if not _api is Object:
 		return
 	var api: Object = _api
 	if api.has_method("setLobbyJoinable"):
-		api.call("setLobbyJoinable", lobby_id, true)
+		api.call("setLobbyJoinable", opened_lobby, true)
 	if api.has_method("setLobbyData"):
-		api.call("setLobbyData", lobby_id, "name", "Candlelit table")
+		api.call("setLobbyData", opened_lobby, "name", "Candlelit table")
 
 
 func _steam_id() -> int:

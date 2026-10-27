@@ -207,10 +207,10 @@ func _finish(seats: Array[PlayerSeat]) -> void:
 			best_id = seat.id
 	state.winner_id = best_id
 	var winner := _seat(seats, best_id)
-	var name := "the table"
+	var kept_name := "the table"
 	if winner != null:
-		name = winner.display_name
-	state.last_note = "The night keeps %s" % name
+		kept_name = winner.display_name
+	state.last_note = "The night keeps %s" % kept_name
 	state.board_event = "ending"
 	state.keeper_line = KeeperLines.pick("ending", state.rng_seed, state.turns_taken)
 

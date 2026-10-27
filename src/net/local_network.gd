@@ -6,7 +6,7 @@ var _last_snapshot: Dictionary = {}
 
 func start_host(_port: int) -> int:
 	_hosting = true
-	_peer_id = 1
+	_self_peer = 1
 	return OK
 
 
@@ -15,7 +15,7 @@ func close_session() -> void:
 
 
 func send_input(action: Dictionary) -> void:
-	var sender := int(action.get("seat", _peer_id))
+	var sender := int(action.get("seat", _self_peer))
 	_emit_input_received(sender, action)
 
 

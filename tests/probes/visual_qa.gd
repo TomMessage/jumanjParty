@@ -86,13 +86,13 @@ func _capture() -> void:
 	var texture := root.get_texture()
 	if texture != null:
 		image = texture.get_image()
-	var name := PlayableScenes.capture_name(_current)
+	var shot_name := PlayableScenes.capture_name(_current)
 	var reason := ImageGuard.assess(image)
 	if reason != "":
 		_failed = true
-		print("VISUAL_FAIL %s %s" % [name, reason])
+		print("VISUAL_FAIL %s %s" % [shot_name, reason])
 		return
-	var dest := _out.path_join(name)
+	var dest := _out.path_join(shot_name)
 	var err := image.save_png(dest)
 	if err != OK:
 		_failed = true

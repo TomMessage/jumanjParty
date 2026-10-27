@@ -51,28 +51,30 @@ func _build_world() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if _camera == null or not event.is_pressed() or event.is_echo():
 		return
+	var viewport: Variant = null
+	if is_inside_tree():
+		viewport = get_viewport()
 	if event.is_action("view_table"):
 		_apply_view("table")
-		_mark_handled()
+		_consume(viewport)
 		return
 	if event.is_action("view_board"):
 		_apply_view("board")
-		_mark_handled()
+		_consume(viewport)
 		return
 	if event.is_action("view_keeper"):
 		_apply_view("keeper")
-		_mark_handled()
+		_consume(viewport)
 		return
 	if event.is_action("view_window"):
 		_apply_view("window")
-		_mark_handled()
+		_consume(viewport)
 
 
-func _mark_handled() -> void:
-	var viewport := get_viewport()
+func _consume(viewport: Variant) -> void:
 	if viewport == null:
 		return
-	viewport.set_input_as_handled()
+	viewport.call("set_input_as_handled")
 
 
 func _apply_view(next: String) -> void:

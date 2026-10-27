@@ -7,7 +7,7 @@ signal state_received(snapshot: Dictionary)
 signal input_received(peer_id: int, action: Dictionary)
 
 var _hosting: bool = false
-var _peer_id: int = 0
+var _self_peer: int = 0
 
 
 func start_host(_port: int) -> int:
@@ -27,7 +27,7 @@ func is_host() -> bool:
 
 
 func get_peer_id() -> int:
-	return _peer_id
+	return _self_peer
 
 
 func remote_count() -> int:

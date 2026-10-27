@@ -23,6 +23,6 @@ func test_steam_is_unavailable() -> void:
 	assert_false(steam.is_host())
 	assert_false(SteamRuntime.ready())
 	assert_false(steam.relay_open())
-	assert_eq(steam.lobby_id(), 0)
+	assert_eq(steam.current_lobby(), 0)
 	assert_false(steam.blocker().is_empty())
 	assert_eq(steam.blocker(), SteamRuntime.reason())
